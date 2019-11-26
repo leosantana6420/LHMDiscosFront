@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Administrativo LHM Discos</title>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/png" href="images/logo.jpg"/>
+        <link rel="stylesheet" type="text/css" href="styles/bootstrap4/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="plugins/slick-1.8.0/slick.css">
+        <link rel="stylesheet" type="text/css" href="styles/pagina_crud_styles.css">
+        <link rel="stylesheet" type="text/css" href="styles/index_styles.css">
+        <link rel="stylesheet" type="text/css" href="styles/responsive.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            var endpoint = "https://localhost:44366/api/";
+            $(document).ready(function () {
+                
+                // Get All Discos
+                $.get(endpoint + "discos", function (data) {
+
+                    $.each(data, function (i, item) {
+                        console.log(item);
+                        $("#discoBody").append("<tr>");
+                        $("#discoBody").append("<td>" + item.Id + "</td>");
+                        $("#discoBody").append("<td>" + item.Nome + "</td>");
+                        $("#discoBody").append("<td>" + item.Cantor + "</td>");
+                        $("#discoBody").append("<td>" + item.Genero + "</td>");
+                        $("#discoBody").append("<td>" + item.Preco + "</td>");
+                        $("#discoBody").append("<td>" + item.QuantidadeEstoque + "</td>");
+                        $("#discoBody").append("</tr>");
+                    });
+                });
+                
+                //Inserir
+                 $("#btnInserir").click(function() {
+                    var objParametros = {
+                        "nome": $("#txtNome").val(),
+                        "cantor": $("#txtCantor").val(),
+                        "genero": $("#txtGenero").val(),
+                        "preco": $("#txtPreco").val(),
+                        "quantidadeEstoque": $("#txtQuantidadeEstoque").val()
+                    };
+                                       
+                    $.ajax({
+                       url: endpoint + "discos",
+                       type: 'post', 
+                       contentType: 'application/json',
+                       data: JSON.stringify(objParametros),
+                       success: function() {
+                            alert("Cadastrado com sucesso!!!");
+                            location.reload();
+                        }
+                    });
+                 });
+                 
+                 //Deletar
+                 $("#btnExcluir").click(function() { 
+                    $.ajax({
+                        url: endpoint + "discos/" + $("#txtDelete").val(),
+                        type: 'delete',
+                        success: function(data) {
+                            alert("Deletado com sucesso!!!");
+                            location.reload();
+                        }
+                    });
+                 });
+                                              
+                 //Atualizar
+                 $("#btnAtualizar").click(function() {
+                    var disco = {
+                        "id": $("#txtIdEdit").val(), 
+                        "nome": $("#txtNomeEdit").val()
+                    };
+              
+                    $.ajax({
+                        url: endpoint + "discos",
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: JSON.stringify(disco),
+                        success: function(data){
+                            alert(data);
+                        }
+                    });
+                 });
+                 
+                 //Get By ID
+                 $("#btnGetById").click(function() { 
+                     alert('');x
+                    $.get(endpoint + "discos/" + $("#txtGetById").val(), function(data) {
+                         $("#txtGetText").val(data.Nome);
+                    });	                 
+                 });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="header_back">
+            <br><br>
+            <div><img class="new_logo" src="images/logo_lhm.png" align="right" width="200"></div>
+            <h2 class="texto_adm">Administração LHM Discos</h2> 
+        </div>
+        <div>
+            <table class="table_discos" border=1>
+                <thead>
+                    <tr>
+                        <th id="title" colspan="6"><h3>DISCOS CATALOGADOS</h3></th>
+                </tr>
+                <tr>
+                    <th> ID </th>
+                    <th> NOME DO DISCO </th>
+                    <th> CANTOR </th>
+                    <th> GÊNERO </th>
+                    <th> PREÇO R$ </th>
+                    <th> QUANTIDADE ESTOQUE </th>
+                </tr>
+                </thead>
+                <tbody id="discoBody">
+                </tbody>
+            </table>
+            <div class="container_crud">
+                <div class="header_back_cadastro">
+                    <h2 class="texto_insert">Cadastrar Novo Disco</h2><br><br>
+                    <p><input type="text" id="txtNome" placeholder="Nome"/></p>
+                    <p><input type="text" id="txtCantor" placeholder="Cantor"/></p>
+                    <p><input type="text" id="txtGenero" placeholder="Gênero"/></p>
+                    <p><input type="text" id="txtPreco" placeholder="Preço"/></p>
+                    <p><input type="text" id="txtQuantidadeEstoque" placeholder="Quantidade no Estoque"/></p>
+                    <input class="botao_inserir" type="button" value="CADASTRAR" id="btnInserir"/>
+                </div>
+            </div>
+            <div class="container_crud">
+                <div class="header_back_delete">
+                    <h2 class="texto_insert">Deletar Disco</h2><br><br>
+                    <p> <input type="text" id="txtDelete" placeholder="Digite o ID do disco que deseja deletar"/></p>
+                    <input class="botao_inserir" type="button" value="DELETAR" id="btnExcluir"/>
+                </div>
+            </div><br><br>     
+            <div class="container_crud">
+                <div class="header_back_update">
+                    <h2 class="texto_insert">Atualizar Disco</h2><br><br>
+                    <p><input type="text" id="txtIdEdit" placeholder="Digite o ID do disco que deseja atualizar"/></p>
+                    <input type="text" id="txtNomeEdit" placeholder="Digite o novo nome do disco"/><br>
+                    <input class="botao_update" type="button" value="ATUALIZAR" id="btnAtualizar"/>
+                </div>
+            </div>     
+            <div class="container_crud">
+                <div class="header_getbyid">
+                    <h2 class="texto_insert">Procurar Disco via ID</h2><br><br>
+                    <p> <input type="text" id="txtGetById" placeholder="Digite o ID do disco que deseja verificar"/> </p>
+                    <p> <input type="text" id="txtGetText"/></p>
+                    <input class="botao_getbyid" type="button" value="PROCURAR" id="btnGetById"/>
+                </div>
+                <div class=""></div>
+            </div>
+        </div>
+    </body>
+</html>
